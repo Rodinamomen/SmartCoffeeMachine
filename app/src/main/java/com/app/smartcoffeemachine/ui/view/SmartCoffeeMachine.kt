@@ -40,7 +40,6 @@ fun SmartCoffeeMachine(
     val state by viewModel.state.collectAsStateWithLifecycle()
     SmartCoffeeMachineContent(state = state, action = viewModel::onActionTrigger)
 }
-
 @Composable
 fun SmartCoffeeMachineContent(
     state: SmartCoffeeMachineContract.SmartCoffeeMachineState,
