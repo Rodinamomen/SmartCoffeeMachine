@@ -4,9 +4,12 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,8 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.app.smartcoffeemachine.R
 import com.app.smartcoffeemachine.common.ui.theme.PreviewAllVariants
 import com.app.smartcoffeemachine.common.ui.theme.SmartCoffeeMachineTheme
 import com.app.smartcoffeemachine.ui.viewmodel.MachineStatus
@@ -47,7 +53,7 @@ fun StateDisplay(
         targetValue = color,
         label = "stateColorAnimation"
     )
-    Box(
+    Column(
         modifier = modifier
             .size(252.dp)
             .clip(CircleShape)
@@ -64,9 +70,17 @@ fun StateDisplay(
                 color = color,
                 shape = CircleShape
             ),
-        contentAlignment = Alignment.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Icon(
+            modifier = Modifier.size(34.dp),
+            imageVector = ImageVector.vectorResource(status.icon),
+            contentDescription = null,
+            tint = color
+        )
         Text(
+            modifier = Modifier.padding(top = 16.dp),
             text = stringResource(status.label),
             color = SmartCoffeeMachineTheme.colors.content.onSurface,
             style = SmartCoffeeMachineTheme.textStyle.displayMedium
@@ -78,6 +92,6 @@ fun StateDisplay(
 @Composable
 private fun StateDisplayPreview() = SmartCoffeeMachineTheme {
     StateDisplay(
-        status = MachineStatus.IDLE
+        status = MachineStatus.ERROR
     )
 }
