@@ -4,6 +4,7 @@ import com.app.smartcoffeemachine.android.controller.BrewingServiceController
 import com.app.smartcoffeemachine.common.domain.model.Resource
 import com.app.smartcoffeemachine.domain.model.Brew
 import com.app.smartcoffeemachine.domain.model.BrewStatus
+import com.app.smartcoffeemachine.domain.model.MachineErrorState
 import com.app.smartcoffeemachine.domain.model.MachineStateStatus
 import com.app.smartcoffeemachine.domain.model.StateTransitionLog
 import com.app.smartcoffeemachine.domain.statemachine.state.BrewingState
@@ -44,11 +45,10 @@ class StateMachineManager(
     private val _progress = MutableStateFlow(0)
     val progress = _progress
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage = _errorMessage
+    private val _errorState =
+        MutableStateFlow<MachineErrorState>(MachineErrorState.None)
 
-    private val _errorCause = MutableStateFlow<String?>(null)
-    val errorCause = _errorCause
+    val errorState = _errorState
     private var stateEntryTimeMs: Long = System.currentTimeMillis()
     fun setState(state: IStateMachineState) {
         currentState = state
@@ -76,8 +76,7 @@ class StateMachineManager(
     }
 
     suspend fun reset() {
-        _errorMessage.value = null
-        _errorCause.value = null
+        _errorState.value = MachineErrorState.None
         currentState.reset()
     }
 
@@ -86,8 +85,11 @@ class StateMachineManager(
             when (result) {
                 is Resource.Failure -> {
                     val exception = result.exception
-                    _errorMessage.value = exception::class.simpleName
-                    _errorCause.value = exception.message
+                    _errorState.value =
+                        MachineErrorState.Error(
+                            title = exception::class.simpleName ?: "Unknown Error",
+                            message = exception.message ?: "Unknown Message",
+                        )
                     stopBrewingLoop(true)
                     transitionTo(IdealState(this))
                 }

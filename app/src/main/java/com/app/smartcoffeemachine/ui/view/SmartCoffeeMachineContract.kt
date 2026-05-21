@@ -3,6 +3,7 @@ package com.app.smartcoffeemachine.ui.view
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.app.smartcoffeemachine.R
+import com.app.smartcoffeemachine.domain.model.MachineErrorState
 
 sealed interface SmartCoffeeMachineContract {
     data class SmartCoffeeMachineState(
@@ -10,8 +11,8 @@ sealed interface SmartCoffeeMachineContract {
         val isPowerOnEnabled: Boolean = true,
         val isStartBrewEnabled: Boolean = false,
         val isError : Boolean = false,
-        val errorCause : String ="",
-        val errorTitle : String = "",
+        val errorTitle: String = "",
+        val errorMessage: String = "",
         val progress: Int = 0,
         val isCancelBrewEnabled: Boolean = false,
         val isResetEnabled: Boolean = false,

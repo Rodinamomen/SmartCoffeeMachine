@@ -53,26 +53,18 @@ fun SmartCoffeeMachineContent(
     state: SmartCoffeeMachineContract.SmartCoffeeMachineState,
     action: (SmartCoffeeMachineContract.SmartCoffeeMachineAction) -> Unit,
 ) {
-    if(state.errorCause.isNotEmpty()){
-        Text(
-            text = state.errorCause,
-            color = SmartCoffeeMachineTheme.colors.content.onSurface,
-            style = SmartCoffeeMachineTheme.textStyle.displayMedium
-        )
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = SmartCoffeeMachineTheme.colors.background)
             .padding(horizontal = 16.dp)
-            .padding(top= 75.dp)
-        ,
+            .padding(top = 75.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         StateDisplay(status = state.status)
         AnimatedVisibility(
-            state.progress!= 0
+            state.progress != 0
         ) {
             LinearProgressIndicator(
                 progress = { state.progress / 100f },
@@ -84,7 +76,7 @@ fun SmartCoffeeMachineContent(
                 trackColor = SmartCoffeeMachineTheme.colors.outline
             )
         }
-       StatusButton(
+        StatusButton(
             onClick = { action(SmartCoffeeMachineContract.SmartCoffeeMachineAction.PowerOn) },
             enabled = state.isPowerOnEnabled,
             color = SmartCoffeeMachineTheme.colors.content.onSurface,
@@ -110,10 +102,10 @@ fun SmartCoffeeMachineContent(
                     icon = R.drawable.ic_latte,
                     text = stringResource(R.string.latte),
                 )
-        }
+            }
         }
         StatusButton(
-            onClick = { action(SmartCoffeeMachineContract.SmartCoffeeMachineAction.StartBrew)},
+            onClick = { action(SmartCoffeeMachineContract.SmartCoffeeMachineAction.StartBrew) },
             enabled = state.isStartBrewEnabled,
             color = SmartCoffeeMachineTheme.colors.content.onSurface,
             contentColor = SmartCoffeeMachineTheme.colors.surfaceContainer,
@@ -151,9 +143,9 @@ fun SmartCoffeeMachineContent(
             state.isResetEnabled
         ) {
             MachineError(
-                errorTitle =state.errorTitle,
-                errorCode = state.errorCause,
-                onResetClicked = {action(SmartCoffeeMachineContract.SmartCoffeeMachineAction.Reset)},
+                errorTitle = state.errorTitle,
+                errorCode = state.errorMessage,
+                onResetClicked = { action(SmartCoffeeMachineContract.SmartCoffeeMachineAction.Reset) },
             )
         }
     }
@@ -220,7 +212,7 @@ private fun StatusButton(
     contentColor: Color,
     color: Color,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Button(
         modifier = modifier.fillMaxWidth(),
@@ -240,6 +232,7 @@ private fun StatusButton(
         )
     }
 }
+
 @Composable
 private fun BrewTypeCard(
     isSelected: Boolean,
@@ -300,7 +293,7 @@ private fun BrewTypeCard(
         )
 
         Text(
-            modifier= Modifier.padding(top= 6.dp),
+            modifier = Modifier.padding(top = 6.dp),
             text = text,
             color = contentColor,
             style = SmartCoffeeMachineTheme.textStyle.titleMedium

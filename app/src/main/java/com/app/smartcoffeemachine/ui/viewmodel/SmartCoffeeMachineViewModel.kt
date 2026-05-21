@@ -2,6 +2,7 @@ package com.app.smartcoffeemachine.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.smartcoffeemachine.domain.model.MachineErrorState
 import com.app.smartcoffeemachine.domain.model.MachineStateStatus
 import com.app.smartcoffeemachine.domain.statemachine.StateMachineManager
 import com.app.smartcoffeemachine.ui.view.MachineStatus
@@ -23,7 +24,7 @@ class SmartCoffeeMachineViewModel(
     init {
         observeProgress()
         observeMachineStatus()
-        observeErrorMessage()
+        observeErrorState()
     }
 
     fun onActionTrigger(
@@ -111,11 +112,28 @@ class SmartCoffeeMachineViewModel(
             }
         }
     }
-    fun observeErrorMessage(){
+
+    fun observeErrorState() {
         viewModelScope.launch {
-            manager.errorMessage.collect { errorCause ->
-                _state.update {
-                    it.copy(errorCause = errorCause.orEmpty())
+            manager.errorState.collect { errorState ->
+                when (errorState) {
+                    is MachineErrorState.Error -> {
+                        _state.update {
+                            it.copy(
+                                errorTitle = errorState.title,
+                                errorMessage = errorState.message,
+                            )
+                        }
+                    }
+
+                    MachineErrorState.None -> {
+                        _state.update {
+                            it.copy(
+                                errorTitle = "",
+                                errorMessage = "",
+                            )
+                        }
+                    }
                 }
             }
         }
