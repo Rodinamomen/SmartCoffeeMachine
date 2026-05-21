@@ -30,17 +30,17 @@ val smartCoffeeMachineModule = module {
     singleOf(::SmartCoffeeMachineLocalDataSource) bind ISmartCoffeeMachineLocalDataSource::class
     singleOf(::SmartCoffeeMachineRepository) bind ISmartCoffeeMachineRepository::class
     single { get<AppDatabase>().BrewEntityDao() }
+    singleOf(::StateMachineManager)
+    singleOf(::LogTransactionUseCase)
     factoryOf(::IdleState)
     factoryOf(::HeatingState)
     factoryOf(::ReadyState)
     factoryOf(::BrewingState)
     factoryOf(::ErrorState)
-    singleOf(::StateMachineManager)
-    singleOf(::LogTransactionUseCase)
     factoryOf(::PowerOnUseCase)
     factoryOf(::BrewingUseCase)
     factoryOf(::AutomaticErrorUseCase)
-    singleOf(::BrewingUseCase)
     factoryOf(::SaveBrewUseCase)
+    factoryOf(::BrewingUseCase)
     viewModelOf(::SmartCoffeeMachineViewModel)
 }
