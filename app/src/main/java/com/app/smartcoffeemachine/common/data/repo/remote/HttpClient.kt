@@ -46,8 +46,7 @@ fun provideHttpClient() = HttpClient() {
         socketTimeoutMillis = 20_000
     }
     defaultRequest {
-        // TODO base url form build.Config
-        url("")
+        url("http://<YOUR_LOCAL_IP>:3001/machine/")
         contentType(ContentType.Application.Json)
     }
     HttpResponseValidator {
@@ -65,23 +64,26 @@ private fun mapHttpException(
 ): SmartCoffeeMachineExceptions {
     val statusCode = response.status.value
     val description = response.status.description
+
     return when (statusCode) {
         HttpStatusCode.InternalServerError.value ->
             SmartCoffeeMachineExceptions.Server.InternalServerError(
                 httpErrorCode = statusCode,
-                message = description
+                reason = description
             )
 
         HttpStatusCode.Conflict.value ->
-            SmartCoffeeMachineExceptions.Server.Conflict()
+            SmartCoffeeMachineExceptions.Server.Conflict(
+                reason = description
+            )
 
         HttpStatusCode.RequestTimeout.value ->
-            SmartCoffeeMachineExceptions.Network.Timeout()
+            SmartCoffeeMachineExceptions.Network.Timeout
 
         else ->
             SmartCoffeeMachineExceptions.Network.Unhandled(
                 errorCode = statusCode,
-                message = description
+                reason = description
             )
     }
 }

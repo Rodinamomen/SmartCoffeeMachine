@@ -1,6 +1,7 @@
 package com.app.smartcoffeemachine.common.di
 
 import androidx.room.Room
+import com.app.smartcoffeemachine.android.controller.BrewingServiceController
 import com.app.smartcoffeemachine.common.data.repo.local.database.AppDatabase
 import com.app.smartcoffeemachine.common.data.repo.remote.RemoteDataSourceProvider
 import com.app.smartcoffeemachine.common.data.repo.remote.provideHttpClient
@@ -19,6 +20,7 @@ val appModule = module {
             encodeDefaults = true
         }
     }
+
     single {
         Room.databaseBuilder(
             androidContext(),
@@ -26,8 +28,15 @@ val appModule = module {
             "smart_coffee_machine_database"
         ).build()
     }
+
     single {
         RemoteDataSourceProvider(client = provideHttpClient(), json = get())
     } bind IRemoteDataSourceProvider::class
+
+    single {
+        BrewingServiceController(
+            context = androidContext()
+        )
+    }
     includes(featuresModule, loggerModule)
 }
