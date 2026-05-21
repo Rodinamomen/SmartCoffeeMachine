@@ -1,4 +1,4 @@
-package com.app.smartcoffeemachine.android
+package com.app.smartcoffeemachine.android.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold

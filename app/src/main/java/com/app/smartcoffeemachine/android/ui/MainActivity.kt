@@ -1,4 +1,4 @@
-package com.app.smartcoffeemachine.android
+package com.app.smartcoffeemachine.android.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

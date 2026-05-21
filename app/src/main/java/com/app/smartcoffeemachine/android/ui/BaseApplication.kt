@@ -1,4 +1,4 @@
-package com.app.smartcoffeemachine.android
+package com.app.smartcoffeemachine.android.ui
 
 import android.app.Application
 import android.app.NotificationChannel
