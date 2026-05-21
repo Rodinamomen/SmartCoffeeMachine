@@ -1,8 +1,6 @@
 package com.app.smartcoffeemachine.domain.statemachine
 
-import android.content.Context
-import android.content.Intent
-import com.app.smartcoffeemachine.android.service.BrewingForegroundService
+import com.app.smartcoffeemachine.android.controller.BrewingServiceController
 import com.app.smartcoffeemachine.common.domain.model.Resource
 import com.app.smartcoffeemachine.domain.model.Brew
 import com.app.smartcoffeemachine.domain.model.BrewStatus
@@ -33,7 +31,7 @@ class StateMachineManager(
     private val automaticErrorUseCase: AutomaticErrorUseCase,
     private val saveBrewUseCase: SaveBrewUseCase,
     private val logTransactionUseCase: LogTransactionUseCase,
-    val context: Context,
+    private val brewingServiceController: BrewingServiceController,
 ) {
     private var brewingJob: Job? = null
     private var currentState: IStateMachineState = IdealState(this)
@@ -93,6 +91,7 @@ class StateMachineManager(
                     stopBrewingLoop(true)
                     transitionTo(IdealState(this))
                 }
+
                 else -> {}
             }
         }
@@ -161,7 +160,7 @@ class StateMachineManager(
         }
         brewingJob = null
         resetProgress()
-        context.stopService(Intent(context, BrewingForegroundService::class.java))
+        brewingServiceController.stop()
     }
 
     private suspend fun logTransaction(state: IStateMachineState) {
@@ -204,5 +203,13 @@ class StateMachineManager(
                 timestamp = System.currentTimeMillis()
             )
         )
+    }
+
+    fun startBrewingService() {
+        brewingServiceController.start()
+    }
+
+    fun stopBrewingService() {
+        brewingServiceController.stop()
     }
 }
