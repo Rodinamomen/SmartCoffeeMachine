@@ -10,7 +10,7 @@ import com.app.smartcoffeemachine.domain.model.StateTransitionLog
 import com.app.smartcoffeemachine.domain.statemachine.state.BrewingState
 import com.app.smartcoffeemachine.domain.statemachine.state.ErrorState
 import com.app.smartcoffeemachine.domain.statemachine.state.HeatingState
-import com.app.smartcoffeemachine.domain.statemachine.state.IdealState
+import com.app.smartcoffeemachine.domain.statemachine.state.IdleState
 import com.app.smartcoffeemachine.domain.statemachine.state.ReadyState
 import com.app.smartcoffeemachine.domain.usecase.AutomaticErrorUseCase
 import com.app.smartcoffeemachine.domain.usecase.BrewingUseCase
@@ -35,7 +35,7 @@ class StateMachineManager(
     private val brewingServiceController: BrewingServiceController,
 ) {
     private var brewingJob: Job? = null
-    private var currentState: IStateMachineState = IdealState(this)
+    private var currentState: IStateMachineState = IdleState(this)
     private var currentBrewType: BrewType = BrewType.ESPRESSO
     private val currentBrewId: UUID = UUID.randomUUID()
 
@@ -72,14 +72,14 @@ class StateMachineManager(
         )
     }
 
-    fun setState(state: IStateMachineState) {
+    private fun setState(state: IStateMachineState) {
         currentState = state
     }
 
     private fun updateMachineStateStatue(state: IStateMachineState) {
         _machineStatus.value =
             when (state) {
-                is IdealState -> MachineStateStatus.IDLE
+                is IdleState -> MachineStateStatus.IDLE
 
                 is HeatingState -> MachineStateStatus.HEATING
 
@@ -124,7 +124,7 @@ class StateMachineManager(
         }
     }
 
-    suspend fun handleStartBrew() {
+     suspend fun handleStartBrew() {
         brewingUseCase().collect { result ->
             when (result) {
                 is Resource.Success -> {
@@ -153,7 +153,7 @@ class StateMachineManager(
         )
     }
 
-    fun stopBrewingLoop(cancelJob: Boolean = true) {
+     fun stopBrewingLoop(cancelJob: Boolean = true) {
         if (cancelJob) {
             brewingJob?.cancel()
         }
@@ -194,7 +194,7 @@ class StateMachineManager(
         _progress.value = value
     }
 
-    fun resetProgress() {
+     fun resetProgress() {
         _progress.value = 0
     }
 

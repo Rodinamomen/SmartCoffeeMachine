@@ -27,7 +27,7 @@ class ErrorStateTest {
         state.resetMachine()
 
         coVerify(exactly = 1) {
-            manager.transitionTo(match { it is IdealState })
+            manager.transitionTo(match { it is IdleState })
         }
     }
 

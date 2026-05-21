@@ -6,10 +6,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-class IdealStateTest {
+class IdleStateTest {
 
     private val manager: StateMachineManager = mockk(relaxed = true)
-    private val state = IdealState(manager)
+    private val state = IdleState(manager)
 
     @Test
     fun `powerOnMachine should call handlePowerOn`() = runTest {

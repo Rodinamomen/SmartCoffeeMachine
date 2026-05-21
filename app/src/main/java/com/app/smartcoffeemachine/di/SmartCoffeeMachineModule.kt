@@ -11,7 +11,7 @@ import com.app.smartcoffeemachine.domain.statemachine.StateMachineManager
 import com.app.smartcoffeemachine.domain.statemachine.state.BrewingState
 import com.app.smartcoffeemachine.domain.statemachine.state.ErrorState
 import com.app.smartcoffeemachine.domain.statemachine.state.HeatingState
-import com.app.smartcoffeemachine.domain.statemachine.state.IdealState
+import com.app.smartcoffeemachine.domain.statemachine.state.IdleState
 import com.app.smartcoffeemachine.domain.statemachine.state.ReadyState
 import com.app.smartcoffeemachine.domain.usecase.AutomaticErrorUseCase
 import com.app.smartcoffeemachine.domain.usecase.BrewingUseCase
@@ -30,7 +30,7 @@ val smartCoffeeMachineModule = module {
     singleOf(::SmartCoffeeMachineLocalDataSource) bind ISmartCoffeeMachineLocalDataSource::class
     singleOf(::SmartCoffeeMachineRepository) bind ISmartCoffeeMachineRepository::class
     single { get<AppDatabase>().BrewEntityDao() }
-    factoryOf(::IdealState)
+    factoryOf(::IdleState)
     factoryOf(::HeatingState)
     factoryOf(::ReadyState)
     factoryOf(::BrewingState)

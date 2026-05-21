@@ -10,7 +10,7 @@ class ErrorState(private val manager: StateMachineManager) : IStateMachineState(
     }
 
     override suspend fun resetMachine() {
-        manager.transitionTo(IdealState(manager))
+        manager.transitionTo(IdleState(manager))
     }
 
     override suspend fun onError() {
