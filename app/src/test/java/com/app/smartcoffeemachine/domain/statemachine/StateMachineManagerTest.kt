@@ -1,10 +1,10 @@
 package com.app.smartcoffeemachine.domain.statemachine
 
-import org.junit.jupiter.api.Assertions.*
 import com.app.smartcoffeemachine.android.controller.BrewingServiceController
 import com.app.smartcoffeemachine.common.data.model.SmartCoffeeMachineExceptions
 import com.app.smartcoffeemachine.common.domain.model.Resource
 import com.app.smartcoffeemachine.domain.model.BrewStatus
+import com.app.smartcoffeemachine.domain.model.BrewType
 import com.app.smartcoffeemachine.domain.model.MachineErrorState
 import com.app.smartcoffeemachine.domain.model.MachineStateStatus
 import com.app.smartcoffeemachine.domain.usecase.AutomaticErrorUseCase
@@ -12,7 +12,6 @@ import com.app.smartcoffeemachine.domain.usecase.BrewingUseCase
 import com.app.smartcoffeemachine.domain.usecase.LogTransactionUseCase
 import com.app.smartcoffeemachine.domain.usecase.PowerOnUseCase
 import com.app.smartcoffeemachine.domain.usecase.SaveBrewUseCase
-import com.app.smartcoffeemachine.ui.view.BrewType
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -233,7 +232,7 @@ class StateMachineManagerTest {
 
         manager.powerOn()
 
-        manager.startBrew(BrewType.MOKA)
+        manager.startBrew(BrewType.LATTE)
 
         manager.cancelBrew()
 
@@ -242,7 +241,7 @@ class StateMachineManagerTest {
         coVerify(exactly = 1) {
             saveBrewUseCase(
                 match {
-                    it.brewType == BrewType.MOKA &&
+                    it.brewType == BrewType.LATTE &&
                             it.status == BrewStatus.CANCEL
                 }
             )

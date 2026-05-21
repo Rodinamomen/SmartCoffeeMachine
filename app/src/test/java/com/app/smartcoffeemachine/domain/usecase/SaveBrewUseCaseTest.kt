@@ -2,8 +2,8 @@ package com.app.smartcoffeemachine.domain.usecase
 
 import com.app.smartcoffeemachine.domain.model.Brew
 import com.app.smartcoffeemachine.domain.model.BrewStatus
+import com.app.smartcoffeemachine.domain.model.BrewType
 import com.app.smartcoffeemachine.domain.repo.ISmartCoffeeMachineRepository
-import com.app.smartcoffeemachine.ui.view.BrewType
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

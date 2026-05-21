@@ -4,6 +4,7 @@ import com.app.smartcoffeemachine.android.controller.BrewingServiceController
 import com.app.smartcoffeemachine.common.domain.model.Resource
 import com.app.smartcoffeemachine.domain.model.Brew
 import com.app.smartcoffeemachine.domain.model.BrewStatus
+import com.app.smartcoffeemachine.domain.model.BrewType
 import com.app.smartcoffeemachine.domain.model.MachineErrorState
 import com.app.smartcoffeemachine.domain.model.MachineStateStatus
 import com.app.smartcoffeemachine.domain.model.StateTransitionLog
@@ -17,7 +18,6 @@ import com.app.smartcoffeemachine.domain.usecase.BrewingUseCase
 import com.app.smartcoffeemachine.domain.usecase.LogTransactionUseCase
 import com.app.smartcoffeemachine.domain.usecase.PowerOnUseCase
 import com.app.smartcoffeemachine.domain.usecase.SaveBrewUseCase
-import com.app.smartcoffeemachine.ui.view.BrewType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -124,7 +124,7 @@ class StateMachineManager(
         }
     }
 
-     suspend fun handleStartBrew() {
+    suspend fun handleStartBrew() {
         brewingUseCase().collect { result ->
             when (result) {
                 is Resource.Success -> {
@@ -153,7 +153,7 @@ class StateMachineManager(
         )
     }
 
-     fun stopBrewingLoop(cancelJob: Boolean = true) {
+    fun stopBrewingLoop(cancelJob: Boolean = true) {
         if (cancelJob) {
             brewingJob?.cancel()
         }
@@ -181,6 +181,7 @@ class StateMachineManager(
             when (result) {
                 is Resource.Failure -> {
                     setError(result.exception)
+                    handleSaveBrew(status = BrewStatus.FAIL)
                     stopBrewingLoop(true)
                     transitionTo(ErrorState(this))
                 }
@@ -194,7 +195,7 @@ class StateMachineManager(
         _progress.value = value
     }
 
-     fun resetProgress() {
+    fun resetProgress() {
         _progress.value = 0
     }
 

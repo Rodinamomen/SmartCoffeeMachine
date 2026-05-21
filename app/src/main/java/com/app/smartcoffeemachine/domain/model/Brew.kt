@@ -1,6 +1,5 @@
 package com.app.smartcoffeemachine.domain.model
 
-import com.app.smartcoffeemachine.ui.view.BrewType
 import java.util.UUID
 
 data class Brew(
@@ -14,4 +13,8 @@ enum class BrewStatus {
     SUCCESS,
     FAIL,
     CANCEL
+}
+enum class BrewType {
+    ESPRESSO,
+    LATTE
 }

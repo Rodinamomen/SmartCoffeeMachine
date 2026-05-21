@@ -2,14 +2,13 @@ package com.app.smartcoffeemachine.data.repo
 
 import com.app.smartcoffeemachine.domain.model.Brew
 import com.app.smartcoffeemachine.domain.model.BrewStatus
+import com.app.smartcoffeemachine.domain.model.BrewType
 import com.app.smartcoffeemachine.domain.repo.local.ISmartCoffeeMachineLocalDataSource
 import com.app.smartcoffeemachine.domain.repo.remote.ISmartCoffeeMachineRemoteDataSource
-import com.app.smartcoffeemachine.ui.view.BrewType
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-
 import java.util.UUID
 
 class SmartCoffeeMachineRepositoryTest {

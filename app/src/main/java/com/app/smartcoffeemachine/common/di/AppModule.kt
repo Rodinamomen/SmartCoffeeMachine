@@ -20,6 +20,7 @@ val appModule = module {
             encodeDefaults = true
         }
     }
+
     single {
         Room.databaseBuilder(
             androidContext(),
@@ -27,9 +28,11 @@ val appModule = module {
             "smart_coffee_machine_database"
         ).build()
     }
+
     single {
         RemoteDataSourceProvider(client = provideHttpClient(), json = get())
     } bind IRemoteDataSourceProvider::class
+
     single {
         BrewingServiceController(
             context = androidContext()

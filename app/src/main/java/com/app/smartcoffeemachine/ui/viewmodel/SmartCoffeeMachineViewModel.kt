@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.app.smartcoffeemachine.domain.model.MachineErrorState
 import com.app.smartcoffeemachine.domain.model.MachineStateStatus
 import com.app.smartcoffeemachine.domain.statemachine.StateMachineManager
-import com.app.smartcoffeemachine.ui.view.MachineStatus
-import com.app.smartcoffeemachine.ui.view.SmartCoffeeMachineContract
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -33,24 +31,36 @@ class SmartCoffeeMachineViewModel(
         viewModelScope.launch {
 
             when (action) {
-                SmartCoffeeMachineContract.SmartCoffeeMachineAction.PowerOn -> {
+                is SmartCoffeeMachineContract.SmartCoffeeMachineAction.PowerOn -> {
                     manager.powerOn()
                 }
 
-                SmartCoffeeMachineContract.SmartCoffeeMachineAction.StartBrew -> {
-                    manager.startBrew(state.value.brewType)
+                is SmartCoffeeMachineContract.SmartCoffeeMachineAction.StartBrew -> {
+                    manager.startBrew(state.value.selectedBrewType)
                 }
 
-                SmartCoffeeMachineContract.SmartCoffeeMachineAction.CancelBrew -> {
+                is SmartCoffeeMachineContract.SmartCoffeeMachineAction.CancelBrew -> {
                     manager.cancelBrew()
                 }
 
-                SmartCoffeeMachineContract.SmartCoffeeMachineAction.Reset -> {
+                is SmartCoffeeMachineContract.SmartCoffeeMachineAction.Reset -> {
                     manager.resetMachine()
                 }
 
-                SmartCoffeeMachineContract.SmartCoffeeMachineAction.AutomaticError -> {
+                is SmartCoffeeMachineContract.SmartCoffeeMachineAction.AutomaticError -> {
                     manager.onError()
+                }
+
+                is SmartCoffeeMachineContract.SmartCoffeeMachineAction.SelectBrewType -> {
+                    _state.update { currentState ->
+                        currentState.copy(
+                            brewTypes = currentState.brewTypes.map { item ->
+                                item.copy(
+                                    isSelected = item.brewType == action.brewType
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -123,8 +133,10 @@ class SmartCoffeeMachineViewModel(
                     is MachineErrorState.Error -> {
                         _state.update {
                             it.copy(
-                                errorTitle = errorState.title,
-                                errorMessage = errorState.message,
+                                errorUiState = it.errorUiState.copy(
+                                    errorTitle = errorState.title,
+                                    errorMessage = errorState.message,
+                                ),
                                 isErrorVisible = true
                             )
                         }
@@ -133,8 +145,10 @@ class SmartCoffeeMachineViewModel(
                     MachineErrorState.None -> {
                         _state.update {
                             it.copy(
-                                errorTitle = "",
-                                errorMessage = "",
+                                errorUiState = it.errorUiState.copy(
+                                    errorTitle = "",
+                                    errorMessage = "",
+                                ),
                                 isErrorVisible = false
                             )
                         }
