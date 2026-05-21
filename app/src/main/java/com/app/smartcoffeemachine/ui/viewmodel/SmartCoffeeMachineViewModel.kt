@@ -40,10 +40,10 @@ class SmartCoffeeMachineViewModel(
                     manager.startBrew(state.value.brewType)
                 }
                 SmartCoffeeMachineContract.SmartCoffeeMachineAction.CancelBrew -> {
-                    manager.cancel()
+                    manager.cancelBrew()
                 }
                 SmartCoffeeMachineContract.SmartCoffeeMachineAction.Reset -> {
-                    manager.reset()
+                    manager.resetMachine()
                 }
 
                 SmartCoffeeMachineContract.SmartCoffeeMachineAction.AutomaticError -> {

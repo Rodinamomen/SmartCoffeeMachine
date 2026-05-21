@@ -9,7 +9,7 @@ class BrewingState(private val manager: StateMachineManager) : IStateMachineStat
         manager.startBrewingLoop()
     }
 
-    override suspend fun cancel() {
+    override suspend fun cancelBrew() {
         manager.stopBrewingService()
         manager.stopBrewingLoop()
         manager.transitionTo(ReadyState(manager))

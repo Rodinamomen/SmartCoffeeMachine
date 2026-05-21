@@ -50,9 +50,6 @@ class StateMachineManager(
 
     val errorState = _errorState
     private var stateEntryTimeMs: Long = System.currentTimeMillis()
-    fun setState(state: IStateMachineState) {
-        currentState = state
-    }
 
     suspend fun transitionTo(state: IStateMachineState) {
         logTransaction(state)
@@ -61,46 +58,42 @@ class StateMachineManager(
         state.onEnter()
     }
 
-    suspend fun powerOn() {
-        currentState.powerOn()
+    private suspend fun logTransaction(state: IStateMachineState) {
+        val now = System.currentTimeMillis()
+        val duration = now - stateEntryTimeMs
+        val toName = state::class.simpleName.orEmpty()
+        logTransactionUseCase(
+            log = StateTransitionLog(
+                from = currentState::class.simpleName.orEmpty(),
+                to = toName,
+                durationMs = duration,
+                timestamp = System.currentTimeMillis()
+            )
+        )
     }
 
-    suspend fun startBrew(brewType: BrewType) {
-        currentBrewType = brewType
-        currentState.startBrew()
+    fun setState(state: IStateMachineState) {
+        currentState = state
     }
 
-    suspend fun cancel() {
-        handleSaveBrew(status = BrewStatus.CANCEL)
-        currentState.cancel()
-    }
+    private fun updateMachineStateStatue(state: IStateMachineState) {
+        _machineStatus.value =
+            when (state) {
+                is IdealState -> MachineStateStatus.IDLE
 
-    suspend fun reset() {
-        _errorState.value = MachineErrorState.None
-        currentState.reset()
-    }
+                is HeatingState -> MachineStateStatus.HEATING
 
-    suspend fun triggerAutomaticError() {
-        automaticErrorUseCase().collect { result ->
-            when (result) {
-                is Resource.Failure -> {
-                    val exception = result.exception
-                    _errorState.value =
-                        MachineErrorState.Error(
-                            title = exception::class.simpleName ?: "Unknown Error",
-                            message = exception.message ?: "Unknown Message",
-                        )
-                    stopBrewingLoop(true)
-                    transitionTo(IdealState(this))
-                }
+                is ReadyState -> MachineStateStatus.READY
 
-                else -> {}
+                is BrewingState -> MachineStateStatus.BREWING
+
+                is ErrorState -> MachineStateStatus.ERROR
+
+                else -> MachineStateStatus.IDLE
             }
-        }
     }
-
-    suspend fun onError() {
-        currentState.onError()
+    suspend fun powerOn() {
+        currentState.powerOnMachine()
     }
 
     suspend fun handlePowerOn() {
@@ -118,6 +111,18 @@ class StateMachineManager(
 
                 }
             }
+        }
+    }
+
+    suspend fun startBrew(brewType: BrewType) {
+        currentBrewType = brewType
+        currentState.startBrew()
+    }
+
+    fun startBrewingLoop() {
+        brewingJob = CoroutineScope(Dispatchers.IO).launch {
+            delay(3000)
+            handleStartBrew()
         }
     }
 
@@ -141,61 +146,6 @@ class StateMachineManager(
         }
     }
 
-    fun updateProgress(value: Int) {
-        _progress.value = value
-    }
-
-    fun resetProgress() {
-        _progress.value = 0
-    }
-
-    fun startBrewingLoop() {
-        brewingJob = CoroutineScope(Dispatchers.IO).launch {
-            delay(3000)
-            handleStartBrew()
-        }
-    }
-
-    fun stopBrewingLoop(cancelJob: Boolean = true) {
-        if (cancelJob) {
-            brewingJob?.cancel()
-        }
-        brewingJob = null
-        resetProgress()
-        brewingServiceController.stop()
-    }
-
-    private suspend fun logTransaction(state: IStateMachineState) {
-        val now = System.currentTimeMillis()
-        val duration = now - stateEntryTimeMs
-        val toName = state::class.simpleName.orEmpty()
-        logTransactionUseCase(
-            log = StateTransitionLog(
-                from = currentState::class.simpleName.orEmpty(),
-                to = toName,
-                durationMs = duration,
-                timestamp = System.currentTimeMillis()
-            )
-        )
-    }
-
-    private fun updateMachineStateStatue(state: IStateMachineState) {
-        _machineStatus.value =
-            when (state) {
-                is IdealState -> MachineStateStatus.IDLE
-
-                is HeatingState -> MachineStateStatus.HEATING
-
-                is ReadyState -> MachineStateStatus.READY
-
-                is BrewingState -> MachineStateStatus.BREWING
-
-                is ErrorState -> MachineStateStatus.ERROR
-
-                else -> MachineStateStatus.IDLE
-            }
-    }
-
     private suspend fun handleSaveBrew(status: BrewStatus) {
         saveBrewUseCase(
             Brew(
@@ -205,6 +155,54 @@ class StateMachineManager(
                 timestamp = System.currentTimeMillis()
             )
         )
+    }
+    fun stopBrewingLoop(cancelJob: Boolean = true) {
+        if (cancelJob) {
+            brewingJob?.cancel()
+        }
+        brewingJob = null
+        resetProgress()
+        brewingServiceController.stop()
+    }
+    suspend fun cancelBrew() {
+        handleSaveBrew(status = BrewStatus.CANCEL)
+        currentState.cancelBrew()
+    }
+
+    suspend fun resetMachine() {
+        _errorState.value = MachineErrorState.None
+        currentState.resetMachine()
+    }
+
+    suspend fun onError() {
+        currentState.onError()
+    }
+
+    suspend fun handleError() {
+        automaticErrorUseCase().collect { result ->
+            when (result) {
+                is Resource.Failure -> {
+                    val exception = result.exception
+                    _errorState.value =
+                        MachineErrorState.Error(
+                            title = exception::class.simpleName ?: "Unknown Error",
+                            message = exception.message ?: "Unknown Message",
+                        )
+                    stopBrewingLoop(true)
+                    transitionTo(IdealState(this))
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    fun updateProgress(value: Int) {
+        _progress.value = value
+    }
+
+    fun resetProgress() {
+        _progress.value = 0
     }
 
     fun startBrewingService() {

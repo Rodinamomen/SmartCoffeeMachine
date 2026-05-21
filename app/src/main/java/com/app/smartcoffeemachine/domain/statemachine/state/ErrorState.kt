@@ -9,11 +9,11 @@ class ErrorState(private val manager: StateMachineManager) : IStateMachineState(
         manager.stopBrewingLoop()
     }
 
-    override suspend fun reset() {
+    override suspend fun resetMachine() {
         manager.transitionTo(IdealState(manager))
     }
 
     override suspend fun onError() {
-        manager.triggerAutomaticError()
+        manager.handleError()
     }
 }
