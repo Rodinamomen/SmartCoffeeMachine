@@ -108,10 +108,6 @@ class StateMachineManager(
                     setError(result.exception)
                     transitionTo(ErrorState(this))
                 }
-
-                is Resource.Loading -> {
-
-                }
             }
         }
     }
@@ -131,9 +127,6 @@ class StateMachineManager(
     suspend fun handleStartBrew() {
         brewingUseCase().collect { result ->
             when (result) {
-                is Resource.Loading -> {
-                }
-
                 is Resource.Success -> {
                     handleSaveBrew(status = BrewStatus.SUCCESS)
                     transitionTo(ReadyState(this))

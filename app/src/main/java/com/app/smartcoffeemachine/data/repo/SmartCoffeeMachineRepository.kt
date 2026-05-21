@@ -2,16 +2,19 @@ package com.app.smartcoffeemachine.data.repo
 
 import com.app.smartcoffeemachine.domain.mapper.toEntity
 import com.app.smartcoffeemachine.domain.model.Brew
-import com.app.smartcoffeemachine.domain.model.StateTransitionLog
+import com.app.smartcoffeemachine.domain.repo.ISmartCoffeeMachineRepository
 import com.app.smartcoffeemachine.domain.repo.local.ISmartCoffeeMachineLocalDataSource
 import com.app.smartcoffeemachine.domain.repo.remote.ISmartCoffeeMachineRemoteDataSource
-import com.app.smartcoffeemachine.domain.repo.ISmartCoffeeMachineRepository
 
-class SmartCoffeeMachineRepository(private val remote : ISmartCoffeeMachineRemoteDataSource, private val local : ISmartCoffeeMachineLocalDataSource) : ISmartCoffeeMachineRepository {
-    override suspend fun powerOn()  {
+class SmartCoffeeMachineRepository(
+    private val remote: ISmartCoffeeMachineRemoteDataSource,
+    private val local: ISmartCoffeeMachineLocalDataSource,
+) : ISmartCoffeeMachineRepository {
+    override suspend fun powerOn() {
         remote.powerOn()
     }
-    override suspend fun brew(){
+
+    override suspend fun brew() {
         remote.brew()
     }
 
