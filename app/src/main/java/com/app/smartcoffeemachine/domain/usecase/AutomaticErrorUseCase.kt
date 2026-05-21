@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 
-class AutomaticErrorUseCase (private val repository: ISmartCoffeeMachineRepository) {
+class AutomaticErrorUseCase(private val repository: ISmartCoffeeMachineRepository) {
     operator fun invoke(): Flow<Resource<Unit>> = flow {
         emit(Resource.Success(repository.powerError()))
         emit(Resource.Loading(isLoading = false))

@@ -92,6 +92,7 @@ class StateMachineManager(
                 else -> MachineStateStatus.IDLE
             }
     }
+
     suspend fun powerOn() {
         currentState.powerOnMachine()
     }
@@ -104,6 +105,7 @@ class StateMachineManager(
                 }
 
                 is Resource.Failure -> {
+                    setError(result.exception)
                     transitionTo(ErrorState(this))
                 }
 
@@ -140,6 +142,7 @@ class StateMachineManager(
 
                 is Resource.Failure -> {
                     handleSaveBrew(status = BrewStatus.FAIL)
+                    setError(result.exception)
                     transitionTo(ErrorState(this))
                 }
             }
@@ -156,6 +159,7 @@ class StateMachineManager(
             )
         )
     }
+
     fun stopBrewingLoop(cancelJob: Boolean = true) {
         if (cancelJob) {
             brewingJob?.cancel()
@@ -164,6 +168,7 @@ class StateMachineManager(
         resetProgress()
         brewingServiceController.stop()
     }
+
     suspend fun cancelBrew() {
         handleSaveBrew(status = BrewStatus.CANCEL)
         currentState.cancelBrew()
@@ -182,14 +187,9 @@ class StateMachineManager(
         automaticErrorUseCase().collect { result ->
             when (result) {
                 is Resource.Failure -> {
-                    val exception = result.exception
-                    _errorState.value =
-                        MachineErrorState.Error(
-                            title = exception::class.simpleName ?: "Unknown Error",
-                            message = exception.message ?: "Unknown Message",
-                        )
+                    setError(result.exception)
                     stopBrewingLoop(true)
-                    transitionTo(IdealState(this))
+                    transitionTo(ErrorState(this))
                 }
 
                 else -> {}
@@ -211,5 +211,12 @@ class StateMachineManager(
 
     fun stopBrewingService() {
         brewingServiceController.stop()
+    }
+
+    private fun setError(exception: Throwable) {
+        _errorState.value = MachineErrorState.Error(
+            title = exception::class.simpleName ?: "Unknown Error",
+            message = exception.message ?: "Unknown error happened"
+        )
     }
 }

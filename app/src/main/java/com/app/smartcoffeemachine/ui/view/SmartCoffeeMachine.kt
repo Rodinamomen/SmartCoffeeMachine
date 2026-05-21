@@ -140,7 +140,7 @@ fun SmartCoffeeMachineContent(
             )
         }
         AnimatedVisibility(
-            state.isResetEnabled
+            visible = state.isErrorVisible
         ) {
             MachineError(
                 errorTitle = state.errorTitle,

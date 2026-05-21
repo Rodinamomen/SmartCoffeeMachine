@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SmartCoffeeMachineViewModel(
-    private val manager: StateMachineManager
+    private val manager: StateMachineManager,
 ) : ViewModel() {
 
     private val _state =
@@ -28,7 +28,7 @@ class SmartCoffeeMachineViewModel(
     }
 
     fun onActionTrigger(
-        action: SmartCoffeeMachineContract.SmartCoffeeMachineAction
+        action: SmartCoffeeMachineContract.SmartCoffeeMachineAction,
     ) {
         viewModelScope.launch {
 
@@ -36,12 +36,15 @@ class SmartCoffeeMachineViewModel(
                 SmartCoffeeMachineContract.SmartCoffeeMachineAction.PowerOn -> {
                     manager.powerOn()
                 }
+
                 SmartCoffeeMachineContract.SmartCoffeeMachineAction.StartBrew -> {
                     manager.startBrew(state.value.brewType)
                 }
+
                 SmartCoffeeMachineContract.SmartCoffeeMachineAction.CancelBrew -> {
                     manager.cancelBrew()
                 }
+
                 SmartCoffeeMachineContract.SmartCoffeeMachineAction.Reset -> {
                     manager.resetMachine()
                 }
@@ -122,6 +125,7 @@ class SmartCoffeeMachineViewModel(
                             it.copy(
                                 errorTitle = errorState.title,
                                 errorMessage = errorState.message,
+                                isErrorVisible = true
                             )
                         }
                     }
@@ -131,6 +135,7 @@ class SmartCoffeeMachineViewModel(
                             it.copy(
                                 errorTitle = "",
                                 errorMessage = "",
+                                isErrorVisible = false
                             )
                         }
                     }

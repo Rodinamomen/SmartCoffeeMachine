@@ -9,10 +9,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 
 fun Throwable.toFailure(): Resource.Failure {
-    val failureException = this as? SmartCoffeeMachineExceptions ?: SmartCoffeeMachineExceptions.Unknown("")
+    val failureException =
+        this as? SmartCoffeeMachineExceptions
+            ?: SmartCoffeeMachineExceptions.Unknown(
+                reason = message
+            )
+
     return Resource.Failure(failureException)
 }
-
 class PowerOnUseCase(private val repository: ISmartCoffeeMachineRepository) {
     operator fun invoke(): Flow<Resource<Unit>> = flow {
         emit(Resource.Success(repository.powerOn()))

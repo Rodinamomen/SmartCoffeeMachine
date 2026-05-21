@@ -16,6 +16,6 @@ class BrewingState(private val manager: StateMachineManager) : IStateMachineStat
     }
 
     override suspend fun onError() {
-        manager.transitionTo(ErrorState(manager))
+        manager.handleError()
     }
 }

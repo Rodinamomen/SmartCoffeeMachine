@@ -13,6 +13,7 @@ sealed interface SmartCoffeeMachineContract {
         val isError : Boolean = false,
         val errorTitle: String = "",
         val errorMessage: String = "",
+        val isErrorVisible: Boolean = false,
         val progress: Int = 0,
         val isCancelBrewEnabled: Boolean = false,
         val isResetEnabled: Boolean = false,
