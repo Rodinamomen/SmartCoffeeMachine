@@ -3,9 +3,11 @@ package com.app.smartcoffeemachine.domain.usecase
 import com.app.smartcoffeemachine.common.domain.model.Resource
 import com.app.smartcoffeemachine.common.domain.usecase.toFailure
 import com.app.smartcoffeemachine.domain.repo.ISmartCoffeeMachineRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlin.Unit
 
 class PowerOnUseCase(private val repository: ISmartCoffeeMachineRepository) {
@@ -13,5 +15,5 @@ class PowerOnUseCase(private val repository: ISmartCoffeeMachineRepository) {
         emit(Resource.Success(repository.powerOn()))
     }.catch { exception ->
         emit(exception.toFailure())
-    }
+    }.flowOn(Dispatchers.IO)
 }

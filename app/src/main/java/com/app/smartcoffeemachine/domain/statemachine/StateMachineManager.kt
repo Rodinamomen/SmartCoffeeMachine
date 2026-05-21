@@ -69,7 +69,17 @@ class StateMachineManager(
                 durationMs = duration,
                 timestamp = System.currentTimeMillis()
             )
-        )
+        ).collect { result ->
+            when (result) {
+                is Resource.Success -> {
+                    stateEntryTimeMs = now
+                }
+
+                is Resource.Failure -> {
+                    setError(result.exception)
+                }
+            }
+        }
     }
 
     private fun setState(state: IStateMachineState) {
@@ -150,7 +160,15 @@ class StateMachineManager(
                 status = status,
                 timestamp = System.currentTimeMillis()
             )
-        )
+        ).collect { result ->
+            when (result) {
+                is Resource.Success -> {}
+
+                is Resource.Failure -> {
+                    setError(result.exception)
+                }
+            }
+        }
     }
 
     fun stopBrewingLoop(cancelJob: Boolean = true) {
