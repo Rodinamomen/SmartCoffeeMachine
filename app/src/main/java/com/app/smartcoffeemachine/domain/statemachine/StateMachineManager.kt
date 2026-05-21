@@ -2,8 +2,6 @@ package com.app.smartcoffeemachine.domain.statemachine
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.app.smartcoffeemachine.android.service.Actions
 import com.app.smartcoffeemachine.android.service.BrewingForegroundService
 import com.app.smartcoffeemachine.common.domain.model.Resource
 import com.app.smartcoffeemachine.domain.model.Brew
@@ -38,7 +36,7 @@ class StateMachineManager(
     val context: Context,
 ) {
     private var brewingJob: Job? = null
-    private var currentState: IStateMachineState = IdealState()
+    private var currentState: IStateMachineState = IdealState(this)
     private var currentBrewType: BrewType = BrewType.ESPRESSO
     private val currentBrewId: UUID = UUID.randomUUID()
 
@@ -62,27 +60,27 @@ class StateMachineManager(
         logTransaction(state)
         setState(state)
         updateMachineStateStatue(state)
-        state.onEnter(this)
+        state.onEnter()
     }
 
     suspend fun powerOn() {
-        currentState.powerOn(this)
+        currentState.powerOn()
     }
 
     suspend fun startBrew(brewType: BrewType) {
         currentBrewType = brewType
-        currentState.startBrew(this)
+        currentState.startBrew()
     }
 
     suspend fun cancel() {
         handleSaveBrew(status = BrewStatus.CANCEL)
-        currentState.cancel(this)
+        currentState.cancel()
     }
 
     suspend fun reset() {
         _errorMessage.value = null
         _errorCause.value = null
-        currentState.reset(this)
+        currentState.reset()
     }
 
     suspend fun triggerAutomaticError() {
@@ -93,7 +91,7 @@ class StateMachineManager(
                     _errorMessage.value = exception::class.simpleName
                     _errorCause.value = exception.message
                     stopBrewingLoop(true)
-                    transitionTo(IdealState())
+                    transitionTo(IdealState(this))
                 }
                 else -> {}
             }
@@ -101,18 +99,18 @@ class StateMachineManager(
     }
 
     suspend fun onError() {
-        currentState.onError(this)
+        currentState.onError()
     }
 
     suspend fun handlePowerOn() {
         powerOnUseCase().collect { result ->
             when (result) {
                 is Resource.Success -> {
-                    transitionTo(HeatingState())
+                    transitionTo(HeatingState(this))
                 }
 
                 is Resource.Failure -> {
-                    transitionTo(ErrorState())
+                    transitionTo(ErrorState(this))
                 }
 
                 is Resource.Loading -> {
@@ -130,13 +128,13 @@ class StateMachineManager(
 
                 is Resource.Success -> {
                     handleSaveBrew(status = BrewStatus.SUCCESS)
-                    transitionTo(ReadyState())
+                    transitionTo(ReadyState(this))
                     stopBrewingLoop(false)
                 }
 
                 is Resource.Failure -> {
                     handleSaveBrew(status = BrewStatus.FAIL)
-                    transitionTo(ErrorState())
+                    transitionTo(ErrorState(this))
                 }
             }
         }

@@ -6,8 +6,8 @@ import com.app.smartcoffeemachine.android.service.BrewingForegroundService
 import com.app.smartcoffeemachine.domain.statemachine.IStateMachineState
 import com.app.smartcoffeemachine.domain.statemachine.StateMachineManager
 
-class ErrorState : IStateMachineState() {
-    override suspend fun onEnter(manager: StateMachineManager) {
+class ErrorState(private val manager: StateMachineManager) : IStateMachineState() {
+    override suspend fun onEnter() {
             val intent = Intent(manager.context, BrewingForegroundService::class.java).apply {
                 action = Actions.STOP.toString()
             }
@@ -15,11 +15,11 @@ class ErrorState : IStateMachineState() {
             manager.stopBrewingLoop()
     }
 
-    override suspend fun reset(manager: StateMachineManager) {
-        manager.transitionTo(IdealState())
+    override suspend fun reset() {
+        manager.transitionTo(IdealState(manager))
     }
 
-    override suspend fun onError(manager: StateMachineManager) {
+    override suspend fun onError() {
         manager.triggerAutomaticError()
     }
 }
