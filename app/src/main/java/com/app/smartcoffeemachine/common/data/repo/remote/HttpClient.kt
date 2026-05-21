@@ -46,8 +46,7 @@ fun provideHttpClient() = HttpClient() {
         socketTimeoutMillis = 20_000
     }
     defaultRequest {
-        // TODO base url form build.Config
-        url("http://192.168.1.22:3001/machine/")
+        url("http://<YOUR_LOCAL_IP>:3001/machine/")
         contentType(ContentType.Application.Json)
     }
     HttpResponseValidator {
