@@ -71,13 +71,8 @@ class StateMachineManager(
             )
         ).collect { result ->
             when (result) {
-                is Resource.Success -> {
-                    stateEntryTimeMs = now
-                }
-
-                is Resource.Failure -> {
-                    setError(result.exception)
-                }
+                is Resource.Success -> { stateEntryTimeMs = now }
+                is Resource.Failure -> { setError(result.exception) }
             }
         }
     }
@@ -90,15 +85,10 @@ class StateMachineManager(
         _machineStatus.value =
             when (state) {
                 is IdleState -> MachineStateStatus.IDLE
-
                 is HeatingState -> MachineStateStatus.HEATING
-
                 is ReadyState -> MachineStateStatus.READY
-
                 is BrewingState -> MachineStateStatus.BREWING
-
                 is ErrorState -> MachineStateStatus.ERROR
-
                 else -> MachineStateStatus.IDLE
             }
     }
@@ -110,9 +100,7 @@ class StateMachineManager(
     suspend fun handlePowerOn() {
         powerOnUseCase().collect { result ->
             when (result) {
-                is Resource.Success -> {
-                    transitionTo(HeatingState(this))
-                }
+                is Resource.Success -> { transitionTo(HeatingState(this)) }
 
                 is Resource.Failure -> {
                     setError(result.exception)
