@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">SmartCoffeeMachine</string>
+    <string name="idle">STANDBY</string>
+    <string name="heating">HEATING</string>
+    <string name="ready">READY</string>
+    <string name="brewing">BREWING</string>
+    <string name="fault">FAULT</string>
+    <string name="power_on">Power On</string>
+    <string name="start_brew">Start Brew</string>
+    <string name="cancel">Cancel</string>
+    <string name="automatic_error">Automatic Error</string>
+    <string name="reset">Reset</string>
+    <string name="espresso">Espresso</string>
+    <string name="latte">Latte</string>
 </resources>
