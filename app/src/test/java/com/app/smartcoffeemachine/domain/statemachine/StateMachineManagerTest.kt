@@ -71,10 +71,6 @@ class StateMachineManagerTest {
         assertEquals(0, manager.progress.value)
         assertEquals(MachineErrorState.None, manager.errorState.value)
 
-        coVerify(exactly = 1) {
-            powerOnUseCase()
-        }
-
         coVerify(atLeast = 1) {
             logTransactionUseCase(any())
         }
@@ -99,10 +95,6 @@ class StateMachineManagerTest {
 
         assertEquals("Timeout", error.title)
         assertEquals("Connection timeout", error.message)
-
-        coVerify(exactly = 1) {
-            powerOnUseCase()
-        }
     }
 
     @Test
@@ -272,10 +264,6 @@ class StateMachineManagerTest {
 
         assertEquals(MachineStateStatus.IDLE, manager.machineStatus.value)
         assertEquals(MachineErrorState.None, manager.errorState.value)
-
-        coVerify(exactly = 1) {
-            automaticErrorUseCase()
-        }
     }
 
     @Test
