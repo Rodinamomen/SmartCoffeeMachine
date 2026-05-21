@@ -1,17 +1,18 @@
 package com.app.smartcoffeemachine.ui.view
-
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -80,18 +81,21 @@ fun SmartCoffeeMachineContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        StateDisplay(status = state.status)
-        AnimatedVisibility(
-            state.progress != 0
+        Box(
+            contentAlignment = Alignment.Center
         ) {
-            LinearProgressIndicator(
-                progress = { state.progress / 100f },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(10.dp)
-                    .clip(RoundedCornerShape(50)),
-                color = SmartCoffeeMachineTheme.colors.status.warning,
-                trackColor = SmartCoffeeMachineTheme.colors.outline
+            if (state.progress != 0) {
+                CircularProgressIndicator(
+                    progress = { state.progress / 100f },
+                    modifier = Modifier.size(290.dp),
+                    strokeWidth = 10.dp,
+                    color = SmartCoffeeMachineTheme.colors.status.warning,
+                    trackColor = SmartCoffeeMachineTheme.colors.outline
+                )
+            }
+
+            StateDisplay(
+                status = state.status
             )
         }
         StatusButton(

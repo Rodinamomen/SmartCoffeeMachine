@@ -23,7 +23,7 @@ class BrewingForegroundService : Service() {
 
     private fun start() {
         val notification = NotificationCompat.Builder(this, "channel_id")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_app_logo)
             .setContentTitle("Smart Coffee Machine")
             .setContentText("Your Coffee is Brewing")
             .setPriority(NotificationCompat.PRIORITY_MAX)

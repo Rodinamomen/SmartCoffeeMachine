@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SmartCoffeeMachine</string>
+    <string name="app_name">EBE Coffee Machine</string>
     <string name="idle">STANDBY</string>
     <string name="heating">HEATING</string>
     <string name="ready">READY</string>
