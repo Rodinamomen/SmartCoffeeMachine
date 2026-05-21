@@ -5,7 +5,7 @@ import com.app.smartcoffeemachine.domain.statemachine.StateMachineManager
 
 class ErrorState(private val manager: StateMachineManager) : IStateMachineState() {
     override suspend fun onEnter() {
-        manager.startBrewingService()
+        manager.stopBrewingService()
         manager.stopBrewingLoop()
     }
 
