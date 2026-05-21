@@ -14,14 +14,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.smartcoffeemachine.R
+import com.app.smartcoffeemachine.android.controller.BrewingSoundController
 import com.app.smartcoffeemachine.common.ui.theme.PreviewAllVariants
 import com.app.smartcoffeemachine.common.ui.theme.SmartCoffeeMachineTheme
 import com.app.smartcoffeemachine.domain.model.BrewType
@@ -29,6 +34,7 @@ import com.app.smartcoffeemachine.ui.components.BrewTypeCard
 import com.app.smartcoffeemachine.ui.components.MachineError
 import com.app.smartcoffeemachine.ui.components.StateDisplay
 import com.app.smartcoffeemachine.ui.components.StatusButton
+import com.app.smartcoffeemachine.ui.viewmodel.MachineStatus
 import com.app.smartcoffeemachine.ui.viewmodel.SmartCoffeeMachineContract
 import com.app.smartcoffeemachine.ui.viewmodel.SmartCoffeeMachineViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -45,6 +51,26 @@ fun SmartCoffeeMachineContent(
     state: SmartCoffeeMachineContract.SmartCoffeeMachineState,
     action: (SmartCoffeeMachineContract.SmartCoffeeMachineAction) -> Unit,
 ) {
+    val context = LocalContext.current
+
+    val soundPlayer = remember {
+        BrewingSoundController(context)
+    }
+
+    LaunchedEffect(state.status) {
+        if (state.status == MachineStatus.BREWING) {
+            soundPlayer.play()
+        } else {
+            soundPlayer.stop()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            soundPlayer.stop()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
