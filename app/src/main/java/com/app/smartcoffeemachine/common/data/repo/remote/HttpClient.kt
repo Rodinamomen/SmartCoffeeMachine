@@ -47,7 +47,7 @@ fun provideHttpClient() = HttpClient() {
     }
     defaultRequest {
         // TODO base url form build.Config
-        url("")
+        url("http://192.168.1.22:3001/machine/")
         contentType(ContentType.Application.Json)
     }
     HttpResponseValidator {

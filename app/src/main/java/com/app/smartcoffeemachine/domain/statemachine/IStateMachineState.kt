@@ -1,10 +1,10 @@
 package com.app.smartcoffeemachine.domain.statemachine
 
-interface IStateMachineState {
-    suspend fun onEnter(manager: StateMachineManager)
-    suspend fun powerOn(manager: StateMachineManager)
-    suspend fun startBrew(manager: StateMachineManager)
-    suspend fun cancel(manager: StateMachineManager)
-    suspend fun reset(manager: StateMachineManager)
-    suspend fun onError(manager: StateMachineManager)
+abstract class IStateMachineState() {
+    open suspend  fun onEnter(manager: StateMachineManager){}
+    open suspend fun powerOn(manager: StateMachineManager){}
+    open suspend fun startBrew(manager: StateMachineManager){}
+    open suspend fun cancel(manager: StateMachineManager){}
+    open suspend fun reset(manager: StateMachineManager){}
+    open suspend fun onError(manager: StateMachineManager){}
 }

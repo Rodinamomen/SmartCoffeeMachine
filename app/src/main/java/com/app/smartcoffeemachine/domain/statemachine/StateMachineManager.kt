@@ -29,11 +29,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.isActive
-import kotlin.coroutines.coroutineContext
-
 class StateMachineManager(
     private val powerOnUseCase: PowerOnUseCase,
     private val brewingUseCase: BrewingUseCase,
@@ -42,7 +37,6 @@ class StateMachineManager(
     private val logTransactionUseCase: LogTransactionUseCase,
     val context: Context,
 ) {
-    private val transitionMutex = Mutex()
     private var brewingJob: Job? = null
     private var currentState: IStateMachineState = IdealState()
     private var currentBrewType: BrewType = BrewType.ESPRESSO
@@ -65,15 +59,10 @@ class StateMachineManager(
     }
 
     suspend fun transitionTo(state: IStateMachineState) {
-        transitionMutex.withLock {
-            // Prevent transition if the current coroutine context has been cancelled
-            if (!coroutineContext.isActive) return
-            
-            logTransaction(state)
-            setState(state)
-            updateMachineStateStatue(state)
-            state.onEnter(this)
-        }
+        logTransaction(state)
+        setState(state)
+        updateMachineStateStatue(state)
+        state.onEnter(this)
     }
 
     suspend fun powerOn() {
@@ -104,7 +93,7 @@ class StateMachineManager(
                     _errorMessage.value = exception::class.simpleName
                     _errorCause.value = exception.message
                     stopBrewingLoop(true)
-                    transitionTo(ErrorState())
+                    transitionTo(IdealState())
                 }
                 else -> {}
             }
@@ -141,9 +130,8 @@ class StateMachineManager(
 
                 is Resource.Success -> {
                     handleSaveBrew(status = BrewStatus.SUCCESS)
-                    // Use false to avoid cancelling the current coroutine before transition completes
-                    stopBrewingLoop(false)
                     transitionTo(ReadyState())
+                    stopBrewingLoop(false)
                 }
 
                 is Resource.Failure -> {
