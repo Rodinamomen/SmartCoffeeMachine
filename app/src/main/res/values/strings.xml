@@ -9,7 +9,8 @@
     <string name="start_brew">Start Brew</string>
     <string name="cancel">Cancel</string>
     <string name="automatic_error">Automatic Error</string>
-    <string name="reset">Reset</string>
+    <string name="reset">reset</string>
     <string name="espresso">Espresso</string>
     <string name="latte">Latte</string>
+    <string name="error_message">The machine stopped responding</string>
 </resources>

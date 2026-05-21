@@ -5,7 +5,6 @@ import com.app.smartcoffeemachine.domain.statemachine.StateMachineManager
 
 class ErrorState : IStateMachineState {
     override suspend fun onEnter(manager: StateMachineManager) {
-        manager.onError()
     }
 
     override suspend fun powerOn(manager: StateMachineManager) {
@@ -25,6 +24,6 @@ class ErrorState : IStateMachineState {
     }
 
     override suspend fun onError(manager: StateMachineManager) {
-        manager.onError()
+        manager.triggerAutomaticError()
     }
 }

@@ -2,6 +2,8 @@ package com.app.smartcoffeemachine.domain.statemachine
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import com.app.smartcoffeemachine.android.service.Actions
 import com.app.smartcoffeemachine.android.service.BrewingForegroundService
 import com.app.smartcoffeemachine.common.domain.model.Resource
 import com.app.smartcoffeemachine.domain.model.Brew
@@ -27,6 +29,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.isActive
+import kotlin.coroutines.coroutineContext
+
 class StateMachineManager(
     private val powerOnUseCase: PowerOnUseCase,
     private val brewingUseCase: BrewingUseCase,
@@ -35,6 +42,7 @@ class StateMachineManager(
     private val logTransactionUseCase: LogTransactionUseCase,
     val context: Context,
 ) {
+    private val transitionMutex = Mutex()
     private var brewingJob: Job? = null
     private var currentState: IStateMachineState = IdealState()
     private var currentBrewType: BrewType = BrewType.ESPRESSO
@@ -57,10 +65,15 @@ class StateMachineManager(
     }
 
     suspend fun transitionTo(state: IStateMachineState) {
-        logTransaction(state)
-        setState(state)
-        updateMachineStateStatue(state)
-        state.onEnter(this)
+        transitionMutex.withLock {
+            // Prevent transition if the current coroutine context has been cancelled
+            if (!coroutineContext.isActive) return
+            
+            logTransaction(state)
+            setState(state)
+            updateMachineStateStatue(state)
+            state.onEnter(this)
+        }
     }
 
     suspend fun powerOn() {
@@ -90,9 +103,9 @@ class StateMachineManager(
                     val exception = result.exception
                     _errorMessage.value = exception::class.simpleName
                     _errorCause.value = exception.message
+                    stopBrewingLoop(true)
                     transitionTo(ErrorState())
                 }
-
                 else -> {}
             }
         }
@@ -100,7 +113,6 @@ class StateMachineManager(
 
     suspend fun onError() {
         currentState.onError(this)
-        triggerAutomaticError()
     }
 
     suspend fun handlePowerOn() {
@@ -129,8 +141,9 @@ class StateMachineManager(
 
                 is Resource.Success -> {
                     handleSaveBrew(status = BrewStatus.SUCCESS)
-                    transitionTo(ReadyState())
+                    // Use false to avoid cancelling the current coroutine before transition completes
                     stopBrewingLoop(false)
+                    transitionTo(ReadyState())
                 }
 
                 is Resource.Failure -> {

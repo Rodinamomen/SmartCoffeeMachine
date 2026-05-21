@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.smartcoffeemachine.R
 import com.app.smartcoffeemachine.common.ui.theme.SmartCoffeeMachineTheme
+import com.app.smartcoffeemachine.ui.components.MachineError
 import com.app.smartcoffeemachine.ui.viewmodel.SmartCoffeeMachineViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -146,13 +147,15 @@ fun SmartCoffeeMachineContent(
                 label = stringResource(R.string.automatic_error)
             )
         }
-        StatusButton(
-            onClick = {  action(SmartCoffeeMachineContract.SmartCoffeeMachineAction.Reset) },
-            enabled = state.isResetEnabled,
-            color = SmartCoffeeMachineTheme.colors.content.onSurface,
-            contentColor = SmartCoffeeMachineTheme.colors.surfaceContainer,
-            label = stringResource(R.string.reset)
-        )
+        AnimatedVisibility(
+            state.isResetEnabled
+        ) {
+            MachineError(
+                errorTitle =state.errorTitle,
+                errorCode = state.errorCause,
+                onResetClicked = {action(SmartCoffeeMachineContract.SmartCoffeeMachineAction.Reset)},
+            )
+        }
     }
 }
 
