@@ -49,8 +49,7 @@ Select the provided file:
 ```text
 mock-api-config.json
 ```
-
-[state_machine_log.txt](https://github.com/user-attachments/files/28124961/state_machine_log.txt)
+[mock-api-config.json](https://github.com/user-attachments/files/28191690/mock-api-config.json)
 ---
 
 ## 4. Configure the Application Base URL
